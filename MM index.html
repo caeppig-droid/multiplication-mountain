@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Multiplication Mountain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#faf3dc;--green:#3b5e10;--leaf:#5f9a1e;--gold:#f5b82e;--ink:#26330f;--red:#c92a2a;--muted:#5f6d4a}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:'Poppins',system-ui,-apple-system,'Segoe UI',sans-serif;color:var(--ink);background:linear-gradient(180deg,#3aa3dc 0%,#7cc8ee 55%,#c9ecfa 100%);background-attachment:fixed;min-height:100vh}
+.wrap{max-width:1060px;margin:0 auto;padding:14px 16px 40px}
+h1,h2,h3{margin:.2em 0}
+.title{font-family:'Lilita One',Impact,'Arial Black',sans-serif;font-weight:400;color:#fff8e6;-webkit-text-stroke:3px var(--green);paint-order:stroke fill;letter-spacing:1px;text-shadow:0 4px 0 var(--green);line-height:1.05}
+.hero{font-size:clamp(2.6rem,8vw,5rem);text-align:center;margin-top:24px}
+.tbt{font-size:1.5rem;-webkit-text-stroke:2px var(--green);text-shadow:0 3px 0 var(--green)}
+.sub{text-align:center;color:#fff;font-weight:700;font-size:1.3rem;margin:.3em 0 1em;text-shadow:0 2px 0 rgba(0,0,0,.15)}
+.card{background:var(--cream);border:4px solid var(--green);border-radius:22px;padding:18px 20px;box-shadow:0 6px 0 rgba(59,94,16,.35)}
+.btn{font-family:'Lilita One',Impact,sans-serif;font-size:1.15rem;letter-spacing:.5px;border:3px solid var(--green);background:#fff;color:var(--green);border-radius:999px;padding:9px 20px;cursor:pointer;box-shadow:0 4px 0 var(--green);transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--green)}
+.btn.primary{background:var(--leaf);color:#fff}
+.btn.gold{background:var(--gold);color:#3a2a00}
+.btn.sm{font-size:.95rem;padding:6px 14px;box-shadow:0 3px 0 var(--green)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.redb{background:#ffe3e3;color:var(--red);border-color:var(--red);box-shadow:0 4px 0 var(--red)}
+.btn:focus-visible,.act:focus-visible,.cell:focus-visible,.node:focus-visible{outline:4px solid var(--gold);outline-offset:3px}
+.btnrow{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.tb-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.chip{background:var(--cream);border:3px solid var(--green);border-radius:999px;padding:5px 12px;font-weight:700;font-size:.95rem;white-space:nowrap}
+.field{display:block;width:100%;font:inherit;font-size:1.3rem;padding:10px 14px;border:3px solid var(--green);border-radius:14px;margin-top:4px;background:#fff;color:var(--ink)}
+.field:focus{outline:none;box-shadow:0 0 0 5px rgba(245,184,46,.65)}
+.login form{max-width:440px;margin:0 auto;display:grid;gap:14px}
+.login label{font-weight:700}
+.msg{color:var(--red);font-weight:700;min-height:1.2em;margin:0;text-align:center}
+.demo{max-width:520px;margin:14px auto;text-align:center;background:rgba(255,255,255,.8);border-radius:14px;padding:8px 12px;font-size:.9rem}
+.chk{display:flex;gap:8px;align-items:center;font-weight:600 !important;font-size:.9rem}
+.scene{display:block;width:100%;max-width:720px;margin:18px auto 0}
+.mapcard{border:4px solid var(--green);border-radius:22px;overflow:hidden;box-shadow:0 6px 0 rgba(59,94,16,.35);background:#7cc8ee}
+.map{display:block;width:100%;height:auto}
+.node{cursor:pointer}
+.node:focus{outline:none}
+.node:focus .ring{stroke:var(--gold);stroke-width:7}
+.node.locked{cursor:not-allowed}
+.nlabel{font-family:'Lilita One',Impact,sans-serif;fill:var(--green);text-anchor:middle;dominant-baseline:central}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pulse 1.6s ease-out infinite}
+@keyframes pulse{0%{transform:scale(.85);opacity:.95}100%{transform:scale(1.4);opacity:0}}
+.hint{text-align:center;margin:12px 0;font-size:1.1rem;font-weight:600;background:rgba(255,255,255,.85);border-radius:999px;padding:8px 14px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:10px}
+.step h3{font-family:'Lilita One';font-weight:400;color:var(--green);font-size:1.4rem}
+.step p{margin:.3em 0;font-size:.95rem}
+.stepnum{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--green);color:#fff;font-family:'Lilita One';font-size:1.2rem;margin-right:6px;vertical-align:middle}
+.lvhead{display:flex;gap:18px;align-items:center;margin-bottom:14px}
+.lvhead p{margin:.3em 0}
+.lvtitle{font-size:clamp(2rem,5vw,3.2rem)}
+.stepcard{margin-bottom:14px}
+.stepcard h2{font-family:'Lilita One';font-weight:400;color:var(--green);font-size:1.6rem}
+.stepcard p{margin:.4em 0}
+.acts{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-top:10px}
+.act{position:relative;text-align:left;font:inherit;background:#fff;border:3px solid var(--green);border-radius:16px;padding:12px;cursor:pointer;display:grid;gap:3px;align-content:start;box-shadow:0 4px 0 rgba(59,94,16,.5);color:var(--ink)}
+.act:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(59,94,16,.5)}
+.aicon{font-size:1.8rem}
+.act b{font-size:1.02rem}
+.act small{color:var(--muted);font-size:.82rem;line-height:1.3}
+.done{position:absolute;top:8px;right:10px;background:var(--leaf);color:#fff;border-radius:50%;width:26px;height:26px;display:grid;place-items:center;font-weight:700}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.meta{color:var(--muted);font-weight:600}
+.play{text-align:center}
+.ptitle{font-family:'Lilita One';font-weight:400;color:var(--green);font-size:2rem}
+.pinstr{max-width:640px;margin:.2em auto 1em}
+.big{font-family:'Lilita One',Impact,sans-serif;font-size:clamp(2.4rem,8vw,4.4rem);line-height:1.1;margin:.2em 0}
+.eq{font-family:'Lilita One';font-size:clamp(1.8rem,5vw,2.6rem);margin:.3em 0}
+.blank{display:inline-block;min-width:1.4em;border-bottom:5px solid var(--gold);color:#b07d00}
+.qrow{display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap;margin:10px 0}
+.ans{font-family:'Lilita One',Impact,sans-serif;font-size:2.4rem;width:4.6ch;text-align:center;border:4px solid var(--green);border-radius:16px;padding:4px 6px;background:#fff;color:var(--ink);outline:none}
+.ans:focus{box-shadow:0 0 0 5px rgba(245,184,46,.65)}
+.ans.sm{font-size:1.6rem;width:3.6ch;border-width:3px;border-radius:12px}
+.ans.wide{width:6ch}
+.ans:disabled{background:#f1ecd8;border-color:#b9c4a6}
+.ans.ok{background:#d3f9d8;border-color:var(--leaf);color:var(--green)}
+.fb{min-height:1.6em;font-weight:700;font-size:1.1rem;margin-top:6px}
+.okc{color:var(--leaf)}.noc{color:var(--red)}
+.good{animation:pop .35s}.shake{animation:shake .35s}
+@keyframes pop{50%{transform:scale(1.15)}}
+@keyframes shake{20%{transform:translateX(-9px)}60%{transform:translateX(9px)}}
+.prog{height:12px;background:#e6dfc4;border-radius:999px;overflow:hidden;max-width:520px;margin:0 auto 10px;border:2px solid var(--green)}
+.bar{height:100%;background:var(--leaf);width:0;transition:width .3s}
+.arr{display:inline-flex;flex-direction:column;gap:6px;padding:12px;background:#fff;border:3px dashed var(--green);border-radius:14px;margin:6px auto}
+.arow{display:flex;gap:6px;justify-content:center}
+.dot{width:18px;height:18px;border-radius:50%;background:var(--lc,#5f9a1e);box-shadow:inset 0 -3px 0 rgba(0,0,0,.2)}
+.arr.empty{padding:20px 26px;font-weight:700;color:var(--muted)}
+.cap{font-weight:700;color:var(--muted);margin:4px 0}
+.dice{font-size:4.5rem;line-height:1;color:var(--green)}
+.tfb{min-width:150px}
+kbd{font-family:inherit;font-size:.75em;background:rgba(0,0,0,.12);border-radius:6px;padding:1px 6px;margin-left:4px}
+.fam{display:flex;gap:24px;justify-content:center;align-items:center;flex-wrap:wrap}
+.famlines{display:grid;gap:10px;text-align:left}
+.fline{display:flex;gap:10px;align-items:center;font-family:'Lilita One';font-size:1.8rem}
+.fline span{min-width:5.2em;text-align:right}
+.trail{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center;margin:16px 0}
+.stone{width:72px;height:72px;border-radius:50%;background:#d8c7a0;border:4px solid #8a6d3b;display:grid;place-items:center;font-family:'Lilita One';font-size:1.7rem;color:#4a3410;box-shadow:0 4px 0 #8a6d3b;padding:0}
+input.stone{background:#fff;text-align:center;color:var(--ink);font-size:1.6rem;outline:none}
+input.stone:focus{box-shadow:0 0 0 5px rgba(245,184,46,.7)}
+input.stone:disabled{background:#efe6cf}
+input.stone.ok{background:#d3f9d8;border-color:var(--leaf)}
+.trail .arrow{color:var(--green);font-weight:700;font-size:1.4rem}
+.maze{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;max-width:440px;margin:12px auto}
+.cell{aspect-ratio:1;border:3px solid var(--green);border-radius:12px;background:#fff;font-family:'Lilita One';font-size:clamp(1rem,3.4vw,1.5rem);color:var(--ink);cursor:pointer;padding:0}
+.cell.on{background:var(--leaf);color:#fff}
+.cell.end{background:var(--gold);font-size:1.8rem}
+.cell.nope{background:#ffc9c9;animation:shake .35s}
+.timer{font-family:'Lilita One';font-size:1.6rem;background:#fff;border:3px solid var(--green);border-radius:999px;padding:2px 16px;display:inline-block}
+.timer.low{background:#ffe3e3;color:var(--red);border-color:var(--red)}
+.testtop{display:flex;justify-content:space-between;align-items:center;max-width:560px;margin:0 auto 6px}
+.result{text-align:center;padding:10px}
+.result h3{font-family:'Lilita One';font-weight:400;font-size:1.8rem;color:var(--green)}
+.stars{font-size:3rem;color:var(--gold);letter-spacing:6px}
+.stars .dim{color:#ddd4b4}
+.missed{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0}
+.missed span{background:#fff;border:2px solid var(--red);color:var(--red);border-radius:10px;padding:4px 10px;font-weight:700}
+.kb{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:14px auto;max-width:720px}
+.key{min-width:48px;height:52px;padding:0 10px;border:3px solid var(--green);border-radius:10px;background:#fff;font-family:'Lilita One';font-size:1.4rem;color:var(--ink);box-shadow:0 3px 0 var(--green);cursor:pointer}
+.key.wide{min-width:96px;font-size:1.05rem}
+.key.hl{background:var(--gold);animation:bob 1s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-4px)}}
+.vestcard{text-align:center}
+.vest{width:100%;max-width:820px;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:8px}
+.legend span{border-radius:999px;padding:3px 10px;font-weight:700;font-size:.85rem;border:2px solid var(--green);background:#fff}
+.legend span.no{opacity:.5;border-style:dashed}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,160%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-weight:600;transition:transform .25s,opacity .25s;opacity:0;pointer-events:none;z-index:60;max-width:90vw;text-align:center}
+#toast.show{transform:translate(-50%,0);opacity:1}
+.confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:50}
+.confetti i{position:absolute;top:-24px;width:10px;height:16px;border-radius:2px;animation:fall 2.8s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+@media (max-width:600px){.lvhead{flex-direction:column;text-align:center}.fline{font-size:1.4rem}.stone{width:58px;height:58px}.tbt{display:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+/* =========================================================
+   TEACHER SETTINGS — the only part you need to edit
+   ========================================================= */
+const CONFIG = {
+  API_URL: '',              // paste your Apps Script web app URL here ('' = demo mode)
+  MAX_FACTOR: 10,           // facts run from ×0 to ×10 (set to 12 for ×12)
+  CLIMB_QUESTIONS: 20,      // questions on Route Check and the Climb
+  CLIMB_SECONDS: 180,       // time limit for Route Check and the Climb
+  PASS_PERCENT: 90,         // % correct needed to earn a patch (90% of 20 = 18)
+  REQUIRE_ROUTE_CHECK: true,// students must try a Route Check before the Climb opens
+  SPRINT_SECONDS: 60        // length of the Fact Sprint game
+};
+
+/* Mountain order matches the Canva map. Badge ids are what you see in the Progress sheet. */
+const LEVELS = [
+  {id:'Camp', label:'Base Camp', kind:'camp', x:62,  y:488, color:'#8d6e3f'},
+  {id:'0s',  label:'0s',  tables:[0],  x:135, y:462, color:'#e8a33d'},
+  {id:'1s',  label:'1s',  tables:[1],  x:190, y:398, color:'#339af0'},
+  {id:'5s',  label:'5s',  tables:[5],  x:236, y:336, color:'#e64980'},
+  {id:'10s', label:'10s', tables:[10], x:286, y:274, color:'#7950f2'},
+  {id:'Mix1',label:'Mixed 1', mixed:true, tables:[0,1,5,10], x:340, y:226, color:'#e8590c'},
+  {id:'2s',  label:'2s',  tables:[2],  x:392, y:156, color:'#12b886'},
+  {id:'4s',  label:'4s',  tables:[4],  x:446, y:96,  color:'#f08c00'},
+  {id:'3s',  label:'3s',  tables:[3],  x:524, y:62,  color:'#e03131'},
+  {id:'6s',  label:'6s',  tables:[6],  x:610, y:82,  color:'#1c7ed6'},
+  {id:'Mix2',label:'Mixed 2', mixed:true, tables:[0,1,2,3,4,5,6,10], x:672, y:122, color:'#364fc7'},
+  {id:'9s',  label:'9s',  tables:[9],  x:724, y:192, color:'#9c36b5'},
+  {id:'8s',  label:'8s',  tables:[8],  x:778, y:260, color:'#2b8a3e'},
+  {id:'7s',  label:'7s',  tables:[7],  x:836, y:322, color:'#f76707'},
+  {id:'Mix3',label:'Mixed 3', mixed:true, tables:[0,1,2,3,4,5,6,7,8,9,10], x:890, y:352, color:'#e67700'},
+  {id:'11s', label:'11s', tables:[11], x:912, y:428, color:'#0c8599'},
+  {id:'12s', label:'12s', tables:[12], x:958, y:500, color:'#c2255c'}
+];
+
+/* ---------- helpers ---------- */
+const $ = (s, r=document) => r.querySelector(s);
+const app = $('#app');
+const rnd = n => Math.floor(Math.random()*n);
+const pick = a => a[rnd(a.length)];
+const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=rnd(i+1); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = s => `${Math.floor(s/60)}:${String(Math.max(0,s)%60).padStart(2,'0')}`;
+const plain = s => String(s).replace(/<[^>]+>/g,'');
+const needCount = () => Math.ceil(CONFIG.CLIMB_QUESTIONS*CONFIG.PASS_PERCENT/100);
+const DEMO = !CONFIG.API_URL;
+const PRAISE = ['✓ Nice!','✓ Yes!','✓ You got it!','✓ Strong climbing!','✓ Correct!'];
+
+let S = null, unlockAll = false, screenId = 0, timers = [], cleanups = [], syncOk = true;
+
+const store = {
+  get(k){ try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null; } },
+  set(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+};
+
+function screen(html){ stopTimers(); screenId++; app.innerHTML = html; window.scrollTo(0,0); }
+function stopTimers(){ timers.forEach(clearInterval); timers = []; cleanups.forEach(f => { try{ f(); }catch(e){} }); cleanups = []; }
+function later(fn, ms){ const id = screenId; return setTimeout(() => { if (id === screenId) fn(); }, ms); }
+function every(fn, ms){ const t = setInterval(fn, ms); timers.push(t); return t; }
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2600); }
+function bump(el){ el.classList.remove('good'); void el.offsetWidth; el.classList.add('good'); }
+function shake(el){ el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); }
+function celebrate(){
+  const box = document.createElement('div'); box.className = 'confetti';
+  const cols = ['#f5b82e','#5f9a1e','#339af0','#e64980','#ffffff'];
+  for (let i=0;i<70;i++){ const s=document.createElement('i'); s.style.left=Math.random()*100+'%'; s.style.background=cols[i%5]; s.style.animationDelay=(Math.random()*.8)+'s'; box.appendChild(s); }
+  document.body.appendChild(box); setTimeout(() => box.remove(), 3800);
+}
+function bindAnswer(inp, btn, cb){
+  const go = () => { const v = inp.value.trim(); if (v === '') { inp.focus(); return; } cb(parseInt(v,10)); };
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); go(); } });
+  inp.addEventListener('input', () => { inp.value = inp.value.replace(/\D/g,'').slice(0,4); });
+  if (btn) btn.onclick = () => { go(); inp.focus(); };
+  setTimeout(() => inp.focus(), 60);
+}
+const ansInput = (id, cls='') => `<input class="ans ${cls}" id="${id}" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-label="Your answer">`;
+
+/* ---------- facts ---------- */
+function factPool(l){ const out=[]; l.tables.forEach(t => { for (let b=0;b<=CONFIG.MAX_FACTOR;b++) out.push([t,b]); }); return out; }
+function pickFacts(l, n, filter = () => true, swap = true){
+  let pool = factPool(l).filter(filter); if (!pool.length) pool = factPool(l);
+  const res = [];
+  while (res.length < n){
+    for (const f of shuffle(pool)){
+      if (res.length >= n) break;
+      const last = res[res.length-1];
+      if (last && last[0]===f[0] && last[1]===f[1] && pool.length>1) continue;
+      res.push(swap && Math.random()<.5 ? [f[1],f[0]] : [f[0],f[1]]);
+    }
+  }
+  return res;
+}
+function levelTitle(l){ return l.kind==='camp' ? 'Base Camp' : l.mixed ? `Mixed Facts ${l.id.slice(-1)}` : `Multiply by ${l.tables[0]}`; }
+
+/* ---------- saving & sending ---------- */
+function blankData(){ return {gear:{}, route:{}, bests:{}, camp:{}}; }
+function normData(d){ d = (d && typeof d === 'object') ? d : {}; const b = blankData(); for (const k in b) if (!d[k] || typeof d[k] !== 'object') d[k] = b[k]; return d; }
+function normBadges(arr){
+  const out = [];
+  (Array.isArray(arr) ? arr : String(arr||'').split(',')).forEach(b => {
+    const k = String(b).toLowerCase().replace(/\s+/g,'');
+    const l = LEVELS.find(l => l.id.toLowerCase()===k || l.label.toLowerCase().replace(/\s+/g,'')===k);
+    if (l && !out.includes(l.id)) out.push(l.id);
+  });
+  return out;
+}
+const demoKey = () => 'mm_demo_' + S.code + '_' + S.name.toLowerCase();
+let pending = store.get('mm_pending') || [], flushing = false;
+
+async function send(action, payload){
+  if (DEMO) return;
+  const job = {action, payload: Object.assign({name:S.name, code:S.code}, payload)};
+  const last = pending[pending.length-1];
+  if (action==='save' && last && last.action==='save' && last.payload.code===S.code) pending[pending.length-1] = job; else pending.push(job);
+  store.set('mm_pending', pending);
+  flush();
+}
+async function flush(){
+  if (flushing || DEMO || !pending.length) return; flushing = true;
+  try {
+    while (pending.length){
+      const job = pending[0];
+      const r = await fetch(CONFIG.API_URL, {method:'POST', body: JSON.stringify(Object.assign({action:job.action}, job.payload))});
+      const j = await r.json();
+      if (!j.ok && j.error !== 'not_found') throw new Error(j.error || 'error');
+      pending.shift(); store.set('mm_pending', pending);
+    }
+    if (!syncOk){ syncOk = true; toast('☁️ All caught up — your teacher has your scores.'); }
+  } catch(e){
+    if (syncOk) toast('⚠️ Couldn’t reach your teacher’s sheet. Your work is saved here and will send soon.');
+    syncOk = false; setTimeout(flush, 20000);
+  }
+  flushing = false;
+}
+function saveProgress(){ if (DEMO) store.set(demoKey(), S); else send('save', {data:S.data}); }
+function logEntry(entry){ if (!DEMO) send('log', {entry}); }
+function award(id){ if (!S.badges.includes(id)) S.badges.push(id); }
+
+async function login(name, code){
+  code = code.toUpperCase();
+  if (DEMO){
+    S = {name, code, badges:[], data:blankData()};
+    const saved = store.get(demoKey());
+    if (saved){ S.badges = normBadges(saved.badges); S.data = normData(saved.data); }
+    return true;
+  }
+  try {
+    const r = await fetch(CONFIG.API_URL, {method:'POST', body: JSON.stringify({action:'login', name, code})});
+    const j = await r.json();
+    if (!j.ok) return j.error==='not_found' ? 'That name and code don’t match. Check the spelling, or ask your teacher for your code.' : 'Something went wrong on the mountain. Try again in a minute.';
+    S = {name: j.name || name, code, badges: normBadges(j.badges), data: normData(j.data)};
+    flush();
+    return true;
+  } catch(e){ return 'Can’t reach the mountain right now. Check your internet and try again.'; }
+}
+
+/* ---------- navigation ---------- */
+app.addEventListener('click', e => {
+  const n = e.target.closest('[data-nav]'); if (!n) return;
+  const v = n.dataset.nav;
+  if (v==='map') renderMap();
+  else if (v==='vest') renderVest();
+  else if (v==='level') renderLevel(+n.dataset.i);
+  else if (v==='logout'){ S = null; unlockAll = false; renderLogin(); }
+});
+function topbar(back){
+  return `<div class="topbar"><div>${back ? `<button class="btn sm" data-nav="${back.nav}"${back.i!=null?` data-i="${back.i}"`:''}>← ${esc(back.label)}</button>` : `<span class="title tbt">Multiplication Mountain</span>`}</div>
+  <div class="tb-right">${!DEMO && !syncOk ? '<span class="chip">⚠️ Will resend</span>' : ''}<span class="chip">🧗 ${esc(S.name)}</span><span class="chip" title="Patches earned">🏅 ${S.badges.length} / ${LEVELS.length}</span><button class="btn sm" data-nav="vest">🦺 My Vest</button>${back ? '' : '<button class="btn sm" data-nav="logout">Log out</button>'}</div></div>`;
+}
+const isOpen = i => unlockAll || i===0 || S.badges.includes(LEVELS[i].id) || S.badges.includes(LEVELS[i-1].id);
+
+/* ---------- art ---------- */
+function tree(x,y,s,c){ return `<g transform="translate(${x},${y}) scale(${s})"><rect x="-4" y="0" width="8" height="14" fill="#5b3a1a"/><polygon points="0,-70 -18,-40 -8,-40 -26,-14 -12,-14 -32,6 32,6 12,-14 26,-14 8,-40 18,-40" fill="${c}"/></g>`; }
+function cloud(x,y,s,o=1){ return `<g transform="translate(${x},${y}) scale(${s})" opacity="${o}" fill="#f4fbff"><ellipse cx="0" cy="0" rx="64" ry="18"/><circle cx="-22" cy="-12" r="22"/><circle cx="16" cy="-20" r="28"/></g>`; }
+function lockIcon(s=1){ return `<g transform="scale(${s})"><path d="M-9,-4 v-6 a9,9 0 0 1 18,0 v6" fill="none" stroke="#b8c4c8" stroke-width="4"/><rect x="-13" y="-4" width="26" height="20" rx="3" fill="#f7cf7f"/><circle cy="5" r="3" fill="#777"/></g>`; }
+const starBadge = (x,y) => `<g transform="translate(${x},${y})"><circle r="11" fill="#f5b82e" stroke="#3b5e10" stroke-width="2.5"/><text class="nlabel" font-size="14" y="1" style="fill:#3b5e10">★</text></g>`;
+function starPts(cx,cy,R,r){ const p=[]; for (let i=0;i<10;i++){ const a=-Math.PI/2+i*Math.PI/5, d=i%2?r:R; p.push((cx+d*Math.cos(a)).toFixed(1)+','+(cy+d*Math.sin(a)).toFixed(1)); } return p.join(' '); }
+
+function patchShape(l, cx, cy, r, earned){
+  const i = LEVELS.indexOf(l);
+  const text = l.kind==='camp' ? 'CAMP' : l.mixed ? 'MIX ' + l.id.slice(-1) : l.label;
+  const fill = earned ? l.color : 'rgba(255,255,255,.35)';
+  const st = earned ? 'rgba(0,0,0,.25)' : '#8aa07a';
+  const dash = earned ? '' : ' stroke-dasharray="6 5"';
+  let base, inner = '';
+  if (l.mixed){
+    base = `<polygon points="${starPts(cx,cy,r*1.18,r*.58)}" fill="${fill}" stroke="${st}" stroke-width="3" stroke-linejoin="round"${dash}/>`;
+    if (earned) inner = `<polygon points="${starPts(cx,cy,r*1.02,r*.5)}" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="4 4" stroke-linejoin="round"/>`;
+  } else if (l.kind==='camp' || i%3===1){
+    base = `<rect x="${cx-r}" y="${cy-r}" width="${2*r}" height="${2*r}" rx="${r*.3}" fill="${fill}" stroke="${st}" stroke-width="3"${dash}/>`;
+    if (earned) inner = `<rect x="${cx-r+6}" y="${cy-r+6}" width="${2*r-12}" height="${2*r-12}" rx="${r*.22}" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="4 4"/>`;
+  } else if (i%3===2){
+    base = `<ellipse cx="${cx}" cy="${cy}" rx="${r*1.12}" ry="${r*.88}" fill="${fill}" stroke="${st}" stroke-width="3"${dash}/>`;
+    if (earned) inner = `<ellipse cx="${cx}" cy="${cy}" rx="${r*1.12-6}" ry="${r*.88-6}" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="4 4"/>`;
+  } else {
+    base = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" stroke="${st}" stroke-width="3"${dash}/>`;
+    if (earned) inner = `<circle cx="${cx}" cy="${cy}" r="${r-6}" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="4 4"/>`;
+  }
+  const fs = r * (text.length > 3 ? .46 : .7);
+  const label = `<text x="${cx}" y="${cy+1}" class="nlabel" font-size="${fs}" style="fill:${earned?'#fff':'#8aa07a'};${earned?'stroke:rgba(0,0,0,.35);stroke-width:3px;paint-order:stroke':''}">${text}</text>`;
+  return `<g><title>${esc(l.label)}${earned?' — earned':' — not yet'}</title>${base}${inner}${label}</g>`;
+}
+const patchSVG = (l, earned, size) => `<svg viewBox="-62 -62 124 124" width="${size}" height="${size}" aria-hidden="true">${patchShape(l,0,0,46,earned)}</svg>`;
+
+function campScene(){
+  let t=''; [[40,250,.9],[110,262,1.1],[600,258,1],[660,250,.8],[700,262,1.1]].forEach(([x,y,s]) => t += tree(x,y,s,'#2f6b1c'));
+  return `<svg class="scene" viewBox="0 0 740 270" aria-hidden="true">
+  <path d="M150,270 C250,180 320,60 400,40 C470,30 540,140 640,270Z" fill="#5fa83a"/>
+  <path d="M400,40 C380,120 350,200 330,270 L420,270 C420,190 410,110 400,40Z" fill="#4f9a33" opacity=".7"/>
+  <rect y="250" width="740" height="20" fill="#5d9a1c"/>
+  <polygon points="170,252 225,180 280,252" fill="#c9b458" stroke="#3b5e10" stroke-width="4" stroke-linejoin="round"/>
+  <polygon points="212,252 225,212 238,252" fill="#5a4630"/>
+  <g transform="translate(470,240)"><polygon points="-14,10 0,-22 14,10" fill="#f76707"/><polygon points="-7,10 0,-10 7,10" fill="#f5b82e"/><rect x="-18" y="8" width="36" height="5" rx="2" fill="#5b3a1a"/></g>
+  ${t}</svg>`;
+}
+
+function mapSVG(nextI){
+  let trees = '';
+  [[20,545,1.1,'#2f6b1c'],[78,558,1.3,'#3d7f22'],[128,550,1,'#2f6b1c'],[178,560,1.2,'#4a8a2a'],[236,552,.9,'#2f6b1c'],[590,558,1.1,'#3d7f22'],[640,548,1.3,'#2f6b1c'],[694,558,1,'#4a8a2a'],[752,550,1.2,'#2f6b1c'],[812,560,1.1,'#3d7f22'],[866,548,.9,'#2f6b1c'],[930,556,1.2,'#4a8a2a'],[990,545,1,'#2f6b1c']]
+    .forEach(([x,y,s,c]) => trees += tree(x,y,s,c));
+  const nodes = LEVELS.map((l,i) => {
+    const open = isOpen(i), earned = S.badges.includes(l.id), next = i===nextI && open;
+    let inner;
+    if (l.kind==='camp'){
+      inner = `${next?'<circle r="46" class="pulse" fill="none" stroke="#fff" stroke-width="5"/>':''}
+        <circle r="40" fill="#faf3dc" class="ring" stroke="${earned?'#f5b82e':'#3b5e10'}" stroke-width="${earned?6:4}"/>
+        <polygon points="-24,16 0,-18 24,16" fill="#c9b458" stroke="#3b5e10" stroke-width="3" stroke-linejoin="round"/><polygon points="-7,16 0,-2 7,16" fill="#5a4630"/>
+        <text class="nlabel" y="58" font-size="17" style="fill:#fff;stroke:#3b5e10;stroke-width:4px;paint-order:stroke">Base Camp</text>${earned?starBadge(30,-30):''}`;
+    } else if (l.mixed){
+      inner = `${next?'<circle cx="35" cy="-15" r="40" class="pulse" fill="none" stroke="#fff" stroke-width="5"/>':''}
+        <rect x="-6" y="-40" width="84" height="80" fill="transparent"/>
+        <line x1="0" y1="32" x2="0" y2="-36" stroke="${l.color}" stroke-width="5"/><circle cy="32" r="6" fill="${l.color}"/>
+        <polygon class="ring" points="0,-36 74,-36 62,-17 74,2 0,2" fill="${open?l.color:'#b9b6a6'}" stroke="${earned?'#f5b82e':'#3b5e10'}" stroke-width="${earned?5:3}" stroke-linejoin="round"/>
+        ${open ? `<text class="nlabel" x="33" y="-26" font-size="15" style="fill:#fff">Mixed</text><text class="nlabel" x="33" y="-10" font-size="15" style="fill:#fff">Facts ${l.id.slice(-1)}</text>` : `<g transform="translate(33,-17)">${lockIcon(.75)}</g>`}
+        ${earned?starBadge(76,-38):''}`;
+    } else {
+      inner = `${next?'<circle r="36" class="pulse" fill="none" stroke="#fff" stroke-width="5"/>':''}
+        <circle r="30" class="ring" fill="${open?'#faf3dc':'#ece6cf'}" stroke="${earned?'#f5b82e':'#3b5e10'}" stroke-width="${earned?6:4}"/>
+        ${open ? `<text class="nlabel" y="1" font-size="${l.label.length>2?22:25}">${l.label}</text>` : lockIcon(1)}
+        ${earned?starBadge(22,-22):''}`;
+    }
+    return `<g class="node${open?'':' locked'}" data-i="${i}" transform="translate(${l.x},${l.y})" tabindex="0" role="button" aria-label="${esc(l.label)}${earned?', patch earned':open?', open':', locked'}">${inner}</g>`;
+  }).join('');
+  return `<svg class="map" viewBox="0 0 1000 560" role="group" aria-label="Mountain map of levels">
+  <defs><linearGradient id="sk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3aa3dc"/><stop offset="1" stop-color="#bfe7f8"/></linearGradient></defs>
+  <rect width="1000" height="560" fill="url(#sk)"/>
+  ${cloud(860,58,1)}${cloud(150,96,.8)}${cloud(712,345,.95,.85)}
+  <g fill="#202d16" opacity=".75"><path d="M160,150 q8,-8 16,0 q8,-8 16,0" stroke="#202d16" stroke-width="3" fill="none"/><path d="M190,176 q7,-7 14,0 q7,-7 14,0" stroke="#202d16" stroke-width="3" fill="none"/></g>
+  <path d="M30,560 C120,500 210,400 290,310 C360,230 420,150 470,100 C500,70 520,52 548,56 C590,62 625,108 662,150 C720,215 785,290 845,352 C905,412 955,462 1000,492 L1000,560 Z" fill="#5fa83a"/>
+  <path d="M548,56 C520,140 470,280 430,560 L560,560 C580,380 565,200 548,56Z" fill="#4f9a33" opacity=".7"/>
+  <path d="M548,56 C600,160 690,330 770,560 L850,560 C770,360 640,170 548,56Z" fill="#82c450" opacity=".5"/>
+  <path d="M300,560 C340,430 390,340 440,280" stroke="#4f9a33" stroke-width="10" fill="none" opacity=".6" stroke-linecap="round"/>
+  <path d="M460,560 C500,528 560,540 600,524 C640,510 670,540 720,560Z" fill="#62c3f2"/>
+  <rect y="546" width="1000" height="14" fill="#5d9a1c"/>
+  ${trees}${nodes}</svg>`;
+}
+
+function vestSVG(){
+  const slots = []; [196,276,356,436,512].forEach(y => [350,430,570,650].forEach(x => slots.push([x,y])));
+  return `<svg class="vest" viewBox="0 0 1000 620" role="img" aria-label="Climbing vest with ${S.badges.length} patches">
+  <rect width="1000" height="620" rx="24" fill="#bfeaff"/>
+  <path d="M500,150 L420,72 C380,80 345,96 318,112 C332,170 322,230 282,270 L262,560 C330,598 430,602 494,584 L500,560 L506,584 C570,602 670,598 738,560 L718,270 C678,230 668,170 682,112 C655,96 620,80 580,72 Z" fill="#6f8f45" stroke="#3f6420" stroke-width="10" stroke-linejoin="round"/>
+  <path d="M420,72 C440,140 470,170 500,190 C530,170 560,140 580,72" fill="#5c7c37" stroke="#3f6420" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M500,190 C505,320 495,450 500,584" stroke="#3f6420" stroke-width="8" fill="none"/>
+  ${LEVELS.map((l,j) => patchShape(l, slots[j][0], slots[j][1], 32, S.badges.includes(l.id))).join('')}
+  </svg>`;
+}
+
+/* ---------- login ---------- */
+function renderLogin(){
+  screen(`<div class="wrap login">
+    <h1 class="title hero">Multiplication<br>Mountain</h1>
+    <p class="sub">Fact Fluency Challenge</p>
+    <form class="card" id="lf" autocomplete="off">
+      <label>First name<input class="field" id="ln" maxlength="30"></label>
+      <label>Climber code<input class="field" id="lc" maxlength="20" autocapitalize="characters"></label>
+      ${DEMO ? '<label class="chk"><input type="checkbox" id="la"> Teacher preview: unlock every level</label>' : ''}
+      <button class="btn primary" type="submit" id="lb">Start the adventure!</button>
+      <p class="msg" id="lm"></p>
+    </form>
+    ${DEMO ? '<p class="demo"><b>Demo mode.</b> No Apps Script URL is set yet, so progress stays on this device and scores aren’t sent anywhere. Any name and code will work.</p>' : ''}
+    ${campScene()}
+  </div>`);
+  $('#ln').focus();
+  $('#lf').onsubmit = async e => {
+    e.preventDefault();
+    const n = $('#ln').value.trim(), c = $('#lc').value.trim(), all = !!($('#la') && $('#la').checked);
+    if (!n || !c){ $('#lm').textContent = 'Type your first name and your climber code.'; return; }
+    $('#lb').disabled = true; $('#lb').textContent = 'Checking…'; $('#lm').textContent = '';
+    const r = await login(n, c);
+    if (r === true){ unlockAll = DEMO && all; renderMap(); }
+    else { $('#lm').textContent = r; $('#lb').disabled = false; $('#lb').textContent = 'Start the adventure!'; }
+  };
+}
+
+/* ---------- map ---------- */
+function renderMap(){
+  const nextI = LEVELS.findIndex(l => !S.badges.includes(l.id));
+  screen(`<div class="wrap">${topbar()}
+    <div class="mapcard">${mapSVG(nextI)}</div>
+    <div class="hint">${nextI < 0 ? '🏔️ You reached the summit! Every patch is yours.' : isOpen(nextI) ? `Next stop: <b>${esc(LEVELS[nextI].label)}</b>. Tap it to start.` : 'Keep climbing!'}</div>
+    <div class="steps">
+      <div class="card step"><h3><span class="stepnum">1</span>🎒 Gear-up</h3><p>Pick the practice activities that work best for you. Practice until you know the facts right away.</p></div>
+      <div class="card step"><h3><span class="stepnum">2</span>🔭 Route Check</h3><p>Take the practice test on your own a couple of times to make sure you know your stuff.</p></div>
+      <div class="card step"><h3><span class="stepnum">3</span>🧗 Climb</h3><p>Ready? Take the Climb to earn your patch. Your score goes straight to your teacher.</p></div>
+    </div></div>`);
+  const map = $('.map');
+  const go = g => { const i = +g.dataset.i; if (!isOpen(i)){ toast(`🔒 Earn the ${LEVELS[i-1].label} patch to unlock this stop.`); return; } renderLevel(i); };
+  map.addEventListener('click', e => { const g = e.target.closest('[data-i]'); if (g) go(g); });
+  map.addEventListener('keydown', e => { if (e.key==='Enter' || e.key===' '){ const g = e.target.closest('[data-i]'); if (g){ e.preventDefault(); go(g); } } });
+}
+
+/* ---------- vest ---------- */
+function renderVest(){
+  screen(`<div class="wrap">${topbar({label:'Mountain', nav:'map'})}
+    <div class="card vestcard"><h1 class="title lvtitle">My Climbing Vest</h1>
+    <p><b>${S.badges.length}</b> of ${LEVELS.length} patches earned${S.badges.length ? '. Keep climbing!' : '. Start at Base Camp to earn your first one.'}</p>
+    ${vestSVG()}
+    <div class="legend">${LEVELS.map(l => `<span class="${S.badges.includes(l.id)?'':'no'}">${S.badges.includes(l.id)?'✓ ':''}${esc(l.label)}</span>`).join('')}</div></div></div>`);
+}
+
+/* ---------- level page ---------- */
+function renderLevel(i){
+  const l = LEVELS[i];
+  if (l.kind==='camp') return renderCamp(i);
+  const gear = S.data.gear[l.id] || {}, route = S.data.route[l.id], earned = S.badges.includes(l.id);
+  const acts = ACTIVITIES.filter(a => a.ok(l));
+  const climbOpen = !CONFIG.REQUIRE_ROUTE_CHECK || route || earned || unlockAll;
+  const N = CONFIG.CLIMB_QUESTIONS;
+  screen(`<div class="wrap">${topbar({label:'Mountain', nav:'map'})}
+    <div class="card lvhead"><div>${patchSVG(l, earned, 110)}</div><div>
+      <h1 class="title lvtitle">${esc(levelTitle(l))}</h1>
+      ${l.mixed ? `<p class="meta">Mixed facts with ${l.tables.map(t=>t+'s').join(', ')}</p>` : ''}
+      <p>${earned ? '🏅 You earned this patch! Keep practicing to stay sharp.' : 'Gear up, check your route, then take the Climb to earn this patch.'}</p></div></div>
+    <section class="card stepcard"><h2><span class="stepnum">1</span>🎒 Gear-up</h2>
+      <p>Choose the activities that work best for you. Practice as long as you need to know the facts right away.</p>
+      <div class="acts">${acts.map(a => `<button class="act" data-act="${a.id}"><span class="aicon" aria-hidden="true">${a.icon}</span><b>${a.name}</b><small>${a.desc}</small>${gear[a.id] ? '<span class="done" title="You did this one">✓</span>' : ''}</button>`).join('')}</div>
+    </section>
+    <div class="two">
+      <section class="card stepcard"><h2><span class="stepnum">2</span>🔭 Route Check</h2>
+        <p>A practice test you take on your own: ${N} facts in ${fmt(CONFIG.CLIMB_SECONDS)}. Try it a couple of times!</p>
+        ${route ? `<p class="meta">Tries: ${route.tries}. Best score: ${route.best} of ${N}.</p>` : ''}
+        <button class="btn primary" data-go="route">Start Route Check</button></section>
+      <section class="card stepcard"><h2><span class="stepnum">3</span>🧗 Climb</h2>
+        <p>Get ${needCount()} of ${N} right in ${fmt(CONFIG.CLIMB_SECONDS)} to earn the patch. Your score goes to your teacher.</p>
+        ${climbOpen ? `<button class="btn gold" data-go="climb">${earned ? 'Climb again' : 'Start the Climb'}</button>` : '<p class="meta">🔒 Take a Route Check first, then the Climb opens.</p>'}</section>
+    </div></div>`);
+  app.querySelectorAll('[data-act]').forEach(b => b.onclick = () => runActivity(i, b.dataset.act));
+  app.querySelectorAll('[data-go]').forEach(b => b.onclick = () => testIntro(i, b.dataset.go));
+}
+
+/* ---------- Gear-up activities ---------- */
+const DICE = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+const nonZero = l => l.tables.some(t => t > 0);
+const hasBig = l => l.tables.some(t => t >= 2);
+
+function quiz(body, items, onDone){
+  let k = 0, correct = 0, retype = false, busy = false; const missed = [];
+  body.innerHTML = `<div class="prog"><div class="bar" id="qbar"></div></div><div id="qp"></div>
+    <div class="qrow">${ansInput('qin')}<button class="btn primary" id="qok">Check</button></div><div class="fb" id="qfb"></div>`;
+  const qp = $('#qp'), inp = $('#qin'), fb = $('#qfb');
+  function show(){ qp.innerHTML = items[k].prompt; inp.value = ''; fb.innerHTML = ''; retype = false; busy = false; $('#qbar').style.width = (k/items.length*100)+'%'; inp.focus(); }
+  bindAnswer(inp, $('#qok'), v => {
+    if (busy) return; const it = items[k];
+    if (v === it.answer){
+      busy = true; if (!retype) correct++;
+      fb.innerHTML = `<span class="okc">${retype ? '✓ Got it. Remember that one!' : pick(PRAISE)}</span>`; bump(qp); k++;
+      later(() => k < items.length ? show() : onDone(correct, items.length, {missed: missed.join('; ')}), 650);
+    } else {
+      if (!retype) missed.push(plain(it.reveal));
+      retype = true; inp.value = ''; shake(inp);
+      fb.innerHTML = `<span class="noc">Not quite.</span> ${it.reveal}. Type <b>${it.answer}</b> to keep climbing.`;
+    }
+  });
+  show();
+}
+
+function arrayPrompt(a, b){
+  if (a===0 || b===0) return `<div class="arr empty">${a===0 ? '0 rows. Nothing here!' : `${a} rows with 0 in each row`}</div><div class="eq">${a} × ${b} = ?</div>`;
+  let rows = ''; for (let r=0;r<a;r++) rows += '<div class="arow">' + '<span class="dot"></span>'.repeat(b) + '</div>';
+  return `<div class="arr">${rows}</div><div class="cap">${a} rows of ${b}</div><div class="eq">${a} × ${b} = ?</div>`;
+}
+
+function triSVG(p,a,b){
+  const c = (x,y,v,top) => `<circle cx="${x}" cy="${y}" r="27" fill="${top?'#f5b82e':'#fff'}" stroke="#3b5e10" stroke-width="4"/><text x="${x}" y="${y+1}" class="nlabel" font-size="${String(v).length>2?20:26}">${v}</text>`;
+  return `<svg viewBox="0 0 220 190" width="220" aria-label="Fact family ${a}, ${b}, ${p}"><polygon points="110,34 34,156 186,156" fill="#e9f5d8" stroke="#3b5e10" stroke-width="5" stroke-linejoin="round"/><polygon points="96,156 110,118 124,156" fill="#c9b458"/>${c(110,34,p,true)}${c(34,156,a)}${c(186,156,b)}</svg>`;
+}
+
+function stepInputs(ins, answers, fb, onLineDone, onAllDone){
+  let j = 0, wrong = 0;
+  const activate = () => { ins[j].disabled = false; ins[j].focus(); };
+  ins.forEach((inp, ix) => {
+    inp.addEventListener('input', () => { inp.value = inp.value.replace(/\D/g,'').slice(0,4); });
+    inp.addEventListener('keydown', e => {
+      if (e.key !== 'Enter' || ix !== j) return; e.preventDefault();
+      if (inp.value === '') return;
+      const ans = answers[j];
+      if (+inp.value === ans){
+        onLineDone(j, wrong === 0); inp.classList.add('ok'); inp.disabled = true; j++; wrong = 0; fb.innerHTML = '';
+        if (j < ins.length) activate(); else onAllDone();
+      } else {
+        wrong++; inp.value = ''; shake(inp);
+        if (wrong === 1) onLineDone(j, null);
+        fb.innerHTML = wrong >= 2 ? `It’s <b>${ans}</b>. Type it in.` : '<span class="noc">Not quite.</span> Try again.';
+      }
+    });
+  });
+  activate();
+}
+
+const ACTIVITIES = [
+  { id:'sprint', icon:'⚡', name:'Fact Sprint', desc:'How many facts can you solve in one minute?', ok:() => true,
+    instr:() => `Solve as many facts as you can before time runs out. Type the answer and press <kbd>Enter</kbd>.`,
+    run(l, body, done){
+      const facts = pickFacts(l, 400); const bestKey = l.id + ':sprint'; const best = S.data.bests[bestKey] || 0;
+      body.innerHTML = `<p class="cap">${best ? `Your best: ${best} facts` : 'Set your first record!'}</p><button class="btn gold" id="sgo">Start the sprint</button>`;
+      $('#sgo').onclick = () => {
+        let k = 0, score = 0, tries = 0, left = CONFIG.SPRINT_SECONDS, busy = false; const missed = [];
+        body.innerHTML = `<div class="testtop"><span class="chip">Solved: <b id="ssc">0</b></span><span class="timer" id="stm">${left}s</span></div>
+          <div class="big" id="sq"></div><div class="qrow">${ansInput('sin')}<button class="btn primary" id="sok">Enter</button></div><div class="fb" id="sfb"></div>`;
+        const q = $('#sq'), inp = $('#sin'), fb = $('#sfb');
+        const show = () => { const [a,b] = facts[k]; q.textContent = `${a} × ${b}`; inp.value = ''; busy = false; inp.focus(); };
+        bindAnswer(inp, $('#sok'), v => {
+          if (busy) return; const [a,b] = facts[k]; tries++; k++;
+          if (v === a*b){ score++; $('#ssc').textContent = score; fb.innerHTML = '<span class="okc">✓</span>'; bump(q); show(); }
+          else { busy = true; missed.push(`${a} × ${b} = ${a*b}`); fb.innerHTML = `<span class="noc">${a} × ${b} = ${a*b}</span>`; later(() => { fb.innerHTML = ''; show(); }, 900); }
+        });
+        every(() => {
+          left--; $('#stm').textContent = left + 's'; if (left <= 10) $('#stm').classList.add('low');
+          if (left <= 0){
+            const nb = Math.max(best, score); S.data.bests[bestKey] = nb;
+            done(score, tries, {headline:`You solved ${score} facts!`, msg: score > best ? '🎉 New personal record!' : `Your record is ${nb}.`, stars: score>=20?3:score>=12?2:1, missed: missed.join('; '), seconds: CONFIG.SPRINT_SECONDS});
+          }
+        }, 1000);
+        show();
+      };
+    }},
+  { id:'arrays', icon:'🏕️', name:'Campsite Arrays', desc:'Count rows and use them to multiply.', ok:() => true,
+    instr:() => 'Each row has the same number. Multiply the rows by how many are in each row.',
+    run(l, body, done){ body.style.setProperty('--lc', l.color); quiz(body, pickFacts(l, 8).map(([a,b]) => ({prompt: arrayPrompt(a,b), answer:a*b, reveal:`${a} × ${b} = <b>${a*b}</b>`})), done); }},
+  { id:'trail', icon:'👣', name:'Skip-Count Trail', desc:'Fill in the missing stepping stones.', ok:nonZero,
+    instr:() => 'Skip count to fill in the missing stones. Type a number and press <kbd>Enter</kbd>.',
+    run(l, body, done){
+      const tabs = l.tables.filter(t => t > 0), count = 5, len = 8; let k = 0, pts = 0; const missed = [];
+      function show(){
+        if (k >= count) return done(pts, count*3, {missed: missed.join('; ')});
+        const n = pick(tabs), start = rnd(Math.max(1, CONFIG.MAX_FACTOR - len + 2));
+        const seq = [...Array(len)].map((_,j) => (start+j)*n), hide = shuffle([1,2,3,4,5,6,7]).slice(0,3).sort((x,y) => x-y);
+        body.innerHTML = `<div class="cap">Trail ${k+1} of ${count}: skip count by <b>${n}s</b></div>
+          <div class="trail">${seq.map((v,j) => hide.includes(j) ? `<input class="stone" inputmode="numeric" autocomplete="off" aria-label="Missing number" disabled>` : `<div class="stone">${v}</div>`).join('<span class="arrow" aria-hidden="true">›</span>')}</div><div class="fb" id="tfb"></div>`;
+        stepInputs([...body.querySelectorAll('input.stone')], hide.map(j => seq[j]), $('#tfb'),
+          (j, first) => { if (first===true) pts++; if (first===null) missed.push(`${seq[hide[j]]} in the ${n}s`); },
+          () => { $('#tfb').innerHTML = '<span class="okc">👣 Trail crossed!</span>'; k++; later(show, 900); });
+      }
+      show();
+    }},
+  { id:'missing', icon:'🎒', name:'Missing Gear', desc:'Find the missing factor.', ok:nonZero,
+    instr:() => 'One number fell out of the backpack! Find the missing factor.',
+    run(l, body, done){
+      quiz(body, pickFacts(l, 10, f => f[0] !== 0, false).map(([t,b]) => {
+        const p = t*b, left = Math.random() < .5;
+        return {prompt:`<div class="eq big">${left ? `${t} × <span class="blank">?</span>` : `<span class="blank">?</span> × ${t}`} = ${p}</div>`, answer:b,
+          reveal: left ? `${t} × <b>${b}</b> = ${p}` : `<b>${b}</b> × ${t} = ${p}`};
+      }), done);
+    }},
+  { id:'truefalse', icon:'✅', name:'True or False', desc:'Is the fact right or wrong?', ok:() => true,
+    instr:() => 'Is the fact true or false? Press <kbd>T</kbd> or <kbd>F</kbd> on the keyboard, or tap a button.',
+    run(l, body, done){
+      const facts = pickFacts(l, 12); let i = 0, correct = 0, busy = false, cur; const missed = [];
+      body.innerHTML = `<div class="prog"><div class="bar" id="tbar"></div></div><div class="big" id="tq"></div>
+        <div class="btnrow"><button class="btn primary tfb" id="tt">✔ True<kbd>T</kbd></button><button class="btn redb tfb" id="tf">✘ False<kbd>F</kbd></button></div><div class="fb" id="tfbk"></div>`;
+      const q = $('#tq'), fb = $('#tfbk');
+      function next(){
+        if (i >= facts.length) return done(correct, facts.length, {missed: missed.join('; ')});
+        const [a,b] = facts[i], p = a*b; let shown = p;
+        if (Math.random() < .5){ const opts = [p+a,p-a,p+1,p-1,p+b,p-b,a+b,p+2].filter(x => x >= 0 && x !== p); shown = pick(opts); }
+        cur = {a, b, p, truth: shown === p}; q.textContent = `${a} × ${b} = ${shown}`; fb.innerHTML = '';
+        $('#tbar').style.width = (i/facts.length*100)+'%'; busy = false;
+      }
+      function answer(v){
+        if (busy) return; busy = true; const ok = v === cur.truth; i++;
+        if (ok){ correct++; fb.innerHTML = `<span class="okc">${pick(PRAISE)}</span>`; bump(q); }
+        else { missed.push(`${cur.a} × ${cur.b} = ${cur.p}`); fb.innerHTML = `<span class="noc">Oops!</span> ${cur.a} × ${cur.b} = <b>${cur.p}</b>`; shake(q); }
+        later(next, ok ? 650 : 1700);
+      }
+      $('#tt').onclick = () => answer(true); $('#tf').onclick = () => answer(false);
+      const kh = e => { if (e.key==='t' || e.key==='T') answer(true); if (e.key==='f' || e.key==='F') answer(false); };
+      document.addEventListener('keydown', kh); cleanups.push(() => document.removeEventListener('keydown', kh));
+      next();
+    }},
+  { id:'family', icon:'⛺', name:'Fact Family Tents', desc:'Use 3 numbers to write 4 facts.', ok:nonZero,
+    instr:() => 'The three numbers on the tent make a fact family. Fill in all four facts.',
+    run(l, body, done){
+      const facts = pickFacts(l, 5, f => f[0] > 0 && f[1] > 0); let k = 0, pts = 0; const missed = [];
+      function show(){
+        if (k >= facts.length) return done(pts, facts.length*4, {missed: missed.join('; ')});
+        const [a,b] = facts[k], p = a*b;
+        const lines = [[`${a} × ${b} =`, p], [`${b} × ${a} =`, p], [`${p} ÷ ${a} =`, b], [`${p} ÷ ${b} =`, a]];
+        body.innerHTML = `<div class="fam"><div>${triSVG(p,a,b)}<div class="cap">Tent ${k+1} of ${facts.length}</div></div>
+          <div class="famlines">${lines.map(ln => `<div class="fline"><span>${ln[0]}</span><input class="ans sm" inputmode="numeric" autocomplete="off" aria-label="Answer for ${ln[0]}" disabled></div>`).join('')}</div></div>
+          <div class="fb" id="ffb">Press <kbd>Enter</kbd> after each answer.</div>`;
+        stepInputs([...body.querySelectorAll('.fline input')], lines.map(x => x[1]), $('#ffb'),
+          (j, first) => { if (first===true) pts++; if (first===null) missed.push(`${lines[j][0]} ${lines[j][1]}`); },
+          () => { $('#ffb').innerHTML = '<span class="okc">⛺ Tent complete!</span>'; k++; later(show, 1000); });
+      }
+      show();
+    }},
+  { id:'treasure', icon:'💰', name:'Treasure Roll', desc:'Roll the dice, then multiply to grab treasure.', ok:nonZero,
+    instr:() => 'Add the two dice. Then multiply that number to grab the treasure!',
+    run(l, body, done){
+      const tabs = l.tables.filter(t => t > 0);
+      const items = [...Array(8)].map(() => { const d1 = 1+rnd(6), d2 = 1+rnd(6), s = d1+d2, n = pick(tabs);
+        return {prompt:`<div class="dice" aria-hidden="true">${DICE[d1-1]} ${DICE[d2-1]}</div><div class="cap">You rolled ${d1} + ${d2} = <b>${s}</b></div><div class="eq">${s} × ${n} = ?</div>`, answer:s*n, reveal:`${s} × ${n} = <b>${s*n}</b>`}; });
+      quiz(body, items, (c,t,x) => done(c, t, Object.assign(x, {headline:`💰 You grabbed ${c} of ${t} treasures!`})));
+    }},
+  { id:'maze', icon:'🧭', name:'Multiples Maze', desc:'Find the path made of multiples.', ok:hasBig,
+    instr:() => 'Start at 0. Tap the multiples to make a path to the ★. Move up, down, left, or right — never diagonal.',
+    run(l, body, done){
+      const tabs = l.tables.filter(t => t >= 2), mazes = 2; let k = 0, steps = 0, mistakes = 0;
+      function show(){
+        if (k >= mazes) return done(steps, steps+mistakes, {headline: mistakes===0 ? 'Perfect path!' : `${mistakes} wrong step${mistakes===1?'':'s'}`, stars: mistakes<=1?3:mistakes<=3?2:1});
+        const n = pick(tabs), m = makeMaze(n);
+        body.innerHTML = `<div class="cap">Maze ${k+1} of ${mazes}: color the multiples of <b>${n}</b></div>
+          <div class="maze" id="mz">${m.grid.map((v,ix) => `<button class="cell${ix===0?' on':''}${ix===m.end?' end':''}" data-ix="${ix}" aria-label="${ix===m.end?'Finish star':v}">${ix===m.end?'★':v}</button>`).join('')}</div>
+          <div class="fb" id="mfb"></div><div class="btnrow"><button class="btn sm" id="mhint">Show the ${n}s</button></div>`;
+        let cur = 0; const visited = new Set([0]); const fb = $('#mfb');
+        const adj = (a,b) => Math.abs(Math.floor(a/6)-Math.floor(b/6)) + Math.abs(a%6-b%6) === 1;
+        $('#mz').onclick = e => {
+          const c = e.target.closest('.cell'); if (!c) return; const ix = +c.dataset.ix;
+          if (visited.has(ix)) return;
+          if (!adj(cur, ix)){ fb.textContent = 'Move one box at a time: up, down, left, or right.'; return; }
+          if (ix === m.end){ c.classList.add('on'); steps++; fb.innerHTML = '<span class="okc">⭐ You made it!</span>'; k++; later(show, 1100); return; }
+          if (m.grid[ix] % n === 0){ visited.add(ix); cur = ix; c.classList.add('on'); steps++; fb.textContent = ''; }
+          else { mistakes++; c.classList.add('nope'); later(() => c.classList.remove('nope'), 500); fb.innerHTML = `<span class="noc">${m.grid[ix]} is not a multiple of ${n}.</span>`; }
+        };
+        $('#mhint').onclick = () => { fb.innerHTML = `Skip count by ${n}s: ${[...Array(CONFIG.MAX_FACTOR+1)].map((_,j) => j*n).join(', ')}`; };
+      }
+      show();
+    }}
+];
+
+function makeMaze(n){
+  const R = 6, C = 6, key = (r,c) => r*C+c;
+  const nb = (r,c) => [[r+1,c],[r,c+1],[r-1,c],[r,c-1]].filter(([a,b]) => a>=0 && b>=0 && a<R && b<C);
+  let path = null;
+  for (let t=0; t<500 && !path; t++){
+    const seen = new Set([0]), p = [0]; let r = 0, c = 0, ok = true;
+    while (!(r===R-1 && c===C-1)){
+      const opts = nb(r,c).filter(([a,b]) => !seen.has(key(a,b)) && nb(a,b).filter(([x,y]) => seen.has(key(x,y))).length === 1);
+      if (!opts.length || p.length > 26){ ok = false; break; }
+      const fwd = opts.filter(([a,b]) => a > r || b > c);
+      [r,c] = (fwd.length && Math.random() < .6) ? pick(fwd) : pick(opts);
+      seen.add(key(r,c)); p.push(key(r,c));
+    }
+    if (ok && p.length >= 13) path = p;
+  }
+  if (!path){ path = [0]; let r = 0, c = 0; while (r < R-1 || c < C-1){ if (r < R-1 && (c === C-1 || Math.random() < .5)) r++; else c++; path.push(key(r,c)); } }
+  const grid = Array(R*C).fill(0), onPath = new Set(path), M = CONFIG.MAX_FACTOR;
+  path.forEach((ix,j) => { grid[ix] = j === 0 ? 0 : n*(1+rnd(M)); });
+  for (let ix=0; ix<R*C; ix++) if (!onPath.has(ix)){
+    let v; do { v = Math.random() < .55 ? n*(1+rnd(M)) + (rnd(2) ? 1 : -1)*(1+rnd(Math.min(3,n-1))) : 1+rnd(n*M); } while (v <= 0 || v % n === 0);
+    grid[ix] = v;
+  }
+  return {grid, end: path[path.length-1]};
+}
+
+function runActivity(i, id){
+  const l = LEVELS[i], a = ACTIVITIES.find(x => x.id === id);
+  screen(`<div class="wrap">${topbar({label: levelTitle(l), nav:'level', i})}
+    <div class="card play"><h2 class="ptitle">${a.icon} ${a.name}</h2><p class="pinstr">${a.instr(l)}</p><div id="pbody"></div></div></div>`);
+  a.run(l, $('#pbody'), (c,t,x) => finishActivity(i, a, c, t, x || {}));
+}
+
+function finishActivity(i, a, correct, total, x){
+  stopTimers(); screenId++;
+  const l = LEVELS[i];
+  if (!S.data.gear[l.id]) S.data.gear[l.id] = {};
+  S.data.gear[l.id][a.id] = true; saveProgress();
+  logEntry({level:l.label, step:'Gear-up', activity:a.name, correct, total, seconds: x.seconds || '', passed:'', missed: x.missed || ''});
+  const pct = total ? correct/total : 0, stars = x.stars || (pct >= .9 ? 3 : pct >= .7 ? 2 : 1);
+  const msg = x.msg || (stars === 3 ? 'You’re ready for this gear. Try a Route Check!' : stars === 2 ? 'Getting stronger! Play again or try another activity.' : 'Every climber practices. Play again to build your speed.');
+  $('#pbody').innerHTML = `<div class="result"><div class="stars" aria-label="${stars} of 3 stars">${'★'.repeat(stars)}<span class="dim">${'★'.repeat(3-stars)}</span></div>
+    <h3>${x.headline || `${correct} of ${total} right on the first try`}</h3><p>${msg}</p>
+    <div class="btnrow"><button class="btn primary" id="again">Play again</button><button class="btn" data-nav="level" data-i="${i}">Back to Gear-up</button></div></div>`;
+  $('#again').onclick = () => runActivity(i, a.id);
+  $('#again').focus();
+}
+
+/* ---------- Route Check & Climb ---------- */
+function testIntro(i, mode){
+  const l = LEVELS[i], N = CONFIG.CLIMB_QUESTIONS, climb = mode === 'climb';
+  screen(`<div class="wrap">${topbar({label: levelTitle(l), nav:'level', i})}
+    <div class="card play"><h2 class="ptitle">${climb ? '🧗 The Climb' : '🔭 Route Check'}: ${esc(l.label)}</h2>
+    <p class="big" style="font-size:2rem">${N} facts in ${fmt(CONFIG.CLIMB_SECONDS)}</p>
+    <p>Get <b>${needCount()}</b> right ${climb ? 'to earn your patch' : 'to be ready for the Climb'}.</p>
+    <p>${climb ? 'You’ll see your score at the end. It goes straight to your teacher.' : 'This is practice. You’ll see if each answer is right.'}</p>
+    <p>Type each answer, then press <kbd>Enter</kbd>.</p>
+    <div class="btnrow"><button class="btn ${climb ? 'gold' : 'primary'}" id="go">I’m ready!</button></div></div></div>`);
+  $('#go').onclick = () => runTest(i, mode); $('#go').focus();
+}
+
+function runTest(i, mode){
+  const l = LEVELS[i], N = CONFIG.CLIMB_QUESTIONS, climb = mode === 'climb', facts = pickFacts(l, N);
+  let k = 0, left = CONFIG.CLIMB_SECONDS, busy = false, finished = false; const answers = [], t0 = Date.now();
+  screen(`<div class="wrap">${topbar({label: levelTitle(l), nav:'level', i})}
+    <div class="card play"><h2 class="ptitle">${climb ? '🧗 The Climb' : '🔭 Route Check'}: ${esc(l.label)}</h2>
+    <div class="testtop"><span class="chip" id="cnt"></span><span class="timer" id="tm">${fmt(left)}</span></div>
+    <div class="prog"><div class="bar" id="tbar"></div></div>
+    <div class="big" id="q"></div><div class="qrow">${ansInput('tin')}<button class="btn primary" id="tok">Enter</button></div><div class="fb" id="fb"></div></div></div>`);
+  const q = $('#q'), inp = $('#tin'), fb = $('#fb');
+  function show(){ const [a,b] = facts[k]; q.textContent = `${a} × ${b}`; $('#cnt').textContent = `${k+1} of ${N}`; $('#tbar').style.width = (k/N*100)+'%'; inp.value = ''; busy = false; inp.focus(); }
+  bindAnswer(inp, $('#tok'), v => {
+    if (busy || finished) return; busy = true;
+    const [a,b] = facts[k], right = v === a*b; answers.push({a, b, v, right}); k++;
+    if (climb){ fb.innerHTML = '<span class="meta">Saved ✓</span>'; later(() => { fb.innerHTML = ''; k < N ? show() : finish(); }, 180); }
+    else { fb.innerHTML = right ? '<span class="okc">✓</span>' : `<span class="noc">✗ ${a} × ${b} = ${a*b}</span>`; later(() => { fb.innerHTML = ''; k < N ? show() : finish(); }, right ? 380 : 1200); }
+  });
+  every(() => { left--; $('#tm').textContent = fmt(left); if (left <= 15) $('#tm').classList.add('low'); if (left <= 0) finish(); }, 1000);
+  show();
+
+  function finish(){
+    if (finished) return; finished = true;
+    const seconds = Math.min(CONFIG.CLIMB_SECONDS, Math.round((Date.now()-t0)/1000));
+    const correct = answers.filter(x => x.right).length, passed = correct >= needCount();
+    const missed = answers.filter(x => !x.right).map(x => `${x.a} × ${x.b} = ${x.a*x.b}`);
+    const wrongTyped = answers.filter(x => !x.right).map(x => `${x.a}×${x.b}=${x.a*x.b} (typed ${x.v})`);
+    facts.slice(answers.length).forEach(([a,b]) => { missed.push(`${a} × ${b} = ${a*b}`); wrongTyped.push(`${a}×${b}=${a*b} (no time)`); });
+    const firstPatch = climb && passed && !S.badges.includes(l.id);
+    logEntry({level:l.label, step: climb ? 'Climb' : 'Route Check', activity: climb ? 'Climb' : 'Route Check', correct, total:N, seconds, passed: passed ? 'YES' : 'no', missed: wrongTyped.join('; '), award: climb && passed ? l.id : ''});
+    if (!climb){ const r = S.data.route[l.id] || {tries:0, best:0}; r.tries++; r.best = Math.max(r.best, correct); S.data.route[l.id] = r; }
+    if (climb && passed) award(l.id);
+    saveProgress();
+    const nextOk = i+1 < LEVELS.length;
+    let head, body;
+    if (climb && passed){
+      head = firstPatch ? `You earned the ${esc(l.label)} patch!` : 'Climb complete!';
+      body = `<div>${patchSVG(l, true, 150)}</div><p>${firstPatch ? 'It’s sewn onto your vest.' : 'You still know these facts. Nice work!'}${nextOk && firstPatch ? ` <b>${esc(LEVELS[i+1].label)}</b> is open now.` : ''}</p>`;
+    } else if (climb){
+      head = 'Not yet. Keep climbing!'; body = `<p>You need ${needCount()} to earn the patch. Gear up with the facts below, then try again.</p>`;
+    } else {
+      head = passed ? 'Your route looks ready! 🧭' : 'Keep gearing up!';
+      body = `<p>${passed ? 'Take one more Route Check, or head to the Climb when you feel confident.' : `You need ${needCount()} to pass the Climb. Practice the facts below.`}</p>`;
+    }
+    screen(`<div class="wrap">${topbar({label: levelTitle(l), nav:'level', i})}
+      <div class="card result"><h2 class="ptitle">${climb ? '🧗 The Climb' : '🔭 Route Check'}: ${esc(l.label)}</h2>
+      <p class="big">${correct} / ${N}</p><p class="meta">Time: ${fmt(seconds)}</p>
+      <h3>${head}</h3>${body}
+      ${missed.length ? `<p class="cap">Facts to practice:</p><div class="missed">${missed.map(m => `<span>${m}</span>`).join('')}</div>` : '<p>🌟 Every answer was right!</p>'}
+      <div class="btnrow">
+        ${climb && passed ? '<button class="btn gold" data-nav="vest">See my vest</button>' : ''}
+        ${climb && passed && nextOk ? `<button class="btn primary" data-nav="level" data-i="${i+1}">Go to ${esc(LEVELS[i+1].label)}</button>` : ''}
+        <button class="btn" data-nav="level" data-i="${i}">Back to ${esc(l.label)}</button>
+        <button class="btn" data-nav="map">Mountain</button>
+      </div></div></div>`);
+    if (climb && passed) celebrate();
+  }
+}
+
+/* ---------- Base Camp: typing training ---------- */
+const CAMP_ROUNDS = [
+  {id:'r1', icon:'🔢', name:'Find the Keys', desc:'Press each number key you see.',
+   instr:'Find the number keys on your keyboard. Press the key that matches the big number. The glowing key shows where it is.',
+   make:() => shuffle('0123456789'.split('').concat(String(rnd(10)), String(rnd(10)))).map(d => ({target:d, auto:true}))},
+  {id:'r2', icon:'✌️', name:'Two-Digit Trail', desc:'Type two-digit numbers, then press Enter.',
+   instr:'Type the whole number, then press Enter to lock it in. Every answer on the mountain ends with Enter!',
+   make:() => { const a = shuffle([10,20,30,40,50,60,70,80,90,11,22,33,44,55,66,77,88,99]).slice(0,4); while (a.length < 10){ const v = 12+rnd(88); if (!a.includes(v)) a.push(v); } return shuffle(a).map(v => ({target:String(v)})); }},
+  {id:'r3', icon:'🛠️', name:'Fix-It Pass', desc:'Type big numbers and use Backspace to fix mistakes.',
+   instr:'Some numbers have three digits. Others are typed wrong: use Backspace to erase, fix the number, then press Enter.',
+   make:() => { const out = [], big = [100,108,110,120,132,144];
+     for (let j=0;j<10;j++){
+       if (j%2===0) out.push({target:String(Math.random() < .5 ? pick(big) : 100+rnd(900))});
+       else { const s = String(10+rnd(90)); const wrong = Math.random() < .5 ? s.slice(0,-1) + ((+s.slice(-1)+1+rnd(8))%10) : s + rnd(10); out.push({target:s, prefill:wrong}); }
+     } return out; }}
+];
+
+function renderCamp(i){
+  const c = S.data.camp, earned = S.badges.includes('Camp');
+  screen(`<div class="wrap">${topbar({label:'Mountain', nav:'map'})}
+    <div class="card lvhead"><div>${patchSVG(LEVELS[0], earned, 110)}</div><div>
+      <h1 class="title lvtitle">Base Camp</h1>
+      <p>Before you climb, train your fingers! On the mountain you’ll type every answer, so let’s get comfortable with the number keys, Enter, and Backspace.</p>
+      ${earned ? '<p>⛺ <b>Base Camp patch earned!</b> The 0s are open. Come back any time to warm up.</p>' : '<p class="meta">Finish all three rounds to earn the Base Camp patch.</p>'}</div></div>
+    <div class="steps">${CAMP_ROUNDS.map((r,j) => `<div class="card step"><h3><span class="stepnum">${j+1}</span>${r.icon} ${r.name}</h3><p>${r.desc}</p>
+      ${c[r.id] ? `<p class="meta">✓ Done${c[r.id].best ? `. Best time: ${fmt(c[r.id].best)}` : ''}</p>` : ''}
+      <div class="btnrow"><button class="btn ${c[r.id] ? '' : 'primary'}" data-round="${r.id}">${c[r.id] ? 'Play again' : 'Start'}</button></div></div>`).join('')}</div>
+    ${earned ? `<div class="btnrow"><button class="btn gold" data-nav="level" data-i="1">Go to the 0s</button></div>` : ''}</div>`);
+  app.querySelectorAll('[data-round]').forEach(b => b.onclick = () => runCampRound(i, b.dataset.round));
+}
+
+function runCampRound(i, rid){
+  const R = CAMP_ROUNDS.find(r => r.id === rid), tasks = R.make(); let k = 0, mistakes = 0, busy = false, t; const t0 = Date.now();
+  screen(`<div class="wrap">${topbar({label:'Base Camp', nav:'level', i})}
+    <div class="card play"><h2 class="ptitle">${R.icon} ${R.name}</h2><p class="pinstr">${R.instr}</p><div id="pbody">
+      <div class="prog"><div class="bar" id="cbar"></div></div>
+      <div class="cap" id="tsub"></div><div class="big" id="tgt"></div>
+      <input class="ans wide" id="cin" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-label="Type here">
+      <div class="kb" id="kb">${'1234567890'.split('').map(d => `<button class="key" data-k="${d}" tabindex="-1">${d}</button>`).join('')}<button class="key wide" data-k="Backspace" tabindex="-1">⌫ Backspace</button><button class="key wide" data-k="Enter" tabindex="-1">Enter ↵</button></div>
+      <div class="fb" id="cfb"></div></div></div></div>`);
+  const inp = $('#cin'), kb = $('#kb'), fb = $('#cfb');
+  function hl(){
+    const v = inp.value, tg = t.target; let key;
+    if (!tg.startsWith(v)) key = 'Backspace'; else if (v.length < tg.length) key = tg[v.length]; else key = t.auto ? null : 'Enter';
+    kb.querySelectorAll('.key').forEach(b => b.classList.toggle('hl', b.dataset.k === key));
+  }
+  function show(){
+    t = tasks[k]; $('#tgt').textContent = t.target;
+    $('#tsub').textContent = t.prefill != null ? `Fix it! Make the box say ${t.target}.` : t.auto ? 'Press this key:' : 'Type this number, then press Enter:';
+    inp.value = t.prefill || ''; $('#cbar').style.width = (k/tasks.length*100)+'%'; fb.textContent = ''; busy = false; hl(); inp.focus();
+  }
+  function good(){ busy = true; inp.classList.add('ok'); bump($('#tgt')); k++; later(() => { inp.classList.remove('ok'); k < tasks.length ? show() : finish(); }, 380); }
+  function bad(msg){ mistakes++; shake(inp); fb.textContent = msg; }
+  function onInput(){
+    inp.value = inp.value.replace(/\D/g,'').slice(0,5); if (busy) return;
+    if (t.auto){ if (inp.value === t.target) return good(); if (inp.value.length){ bad('Not that one. Look for the glowing key!'); inp.value = ''; } }
+    hl();
+  }
+  function onEnter(){
+    if (busy || t.auto) return;
+    if (inp.value === t.target) return good();
+    bad(t.target.startsWith(inp.value) ? 'Keep typing. The number isn’t finished yet.' : 'Use the Backspace key ⌫ to erase, then fix it.'); hl();
+  }
+  inp.addEventListener('input', onInput);
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); onEnter(); } });
+  kb.addEventListener('mousedown', e => e.preventDefault());
+  kb.addEventListener('click', e => {
+    const b = e.target.closest('.key'); if (!b) return; const key = b.dataset.k;
+    if (key === 'Enter') onEnter(); else { inp.value = key === 'Backspace' ? inp.value.slice(0,-1) : inp.value + key; onInput(); }
+    inp.focus();
+  });
+  function finish(){
+    stopTimers(); screenId++;
+    const seconds = Math.round((Date.now()-t0)/1000), prev = S.data.camp[rid];
+    S.data.camp[rid] = {done:true, best: prev && prev.best ? Math.min(prev.best, seconds) : seconds};
+    logEntry({level:'Base Camp', step:'Base Camp', activity:R.name, correct:tasks.length, total:tasks.length+mistakes, seconds, passed:'', missed:''});
+    const all = CAMP_ROUNDS.every(r => S.data.camp[r.id]);
+    const newPatch = all && !S.badges.includes('Camp');
+    if (newPatch){ award('Camp'); logEntry({level:'Base Camp', step:'Base Camp', activity:'All rounds complete', correct:'', total:'', seconds:'', passed:'YES', missed:'', award:'Camp'}); }
+    saveProgress();
+    const stars = mistakes <= 1 ? 3 : mistakes <= 4 ? 2 : 1;
+    $('#pbody').innerHTML = `<div class="result"><div class="stars" aria-label="${stars} of 3 stars">${'★'.repeat(stars)}<span class="dim">${'★'.repeat(3-stars)}</span></div>
+      <h3>${newPatch ? 'You earned the Base Camp patch!' : 'Round complete!'}</h3>
+      ${newPatch ? `<div>${patchSVG(LEVELS[0], true, 140)}</div><p>Your fingers are ready. The 0s are open on the mountain!</p>` : `<p>Time: ${fmt(seconds)}. ${mistakes ? `${mistakes} slip${mistakes===1?'':'s'} — that’s how fingers learn.` : 'No slips at all!'}</p>`}
+      <div class="btnrow">${newPatch ? '<button class="btn gold" data-nav="level" data-i="1">Go to the 0s</button>' : ''}<button class="btn primary" id="again">Play again</button><button class="btn" data-nav="level" data-i="${i}">Back to Base Camp</button></div></div>`;
+    $('#again').onclick = () => runCampRound(i, rid);
+    if (newPatch) celebrate();
+  }
+  show();
+}
+
+/* ---------- start ---------- */
+window.addEventListener('online', flush);
+renderLogin();
+</script>
+</body>
+</html>
